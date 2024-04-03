@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greedy.sarada.sell.dao.SellMapper">
+
+	<resultMap id="sellCategoryResultMap" type="com.greedy.sarada.sell.dto.CategoryDto">
+		<id property="categoryCode" column="CATEGORY_CODE"/>
+		<result property="categoryName" column="CATEGORY_NAME"/>
+		<result property="refCategory" column="REF_CATEGORY"/>
+	</resultMap>
+	
+	<resultMap id="RefCategoryResultMap" type="com.greedy.sarada.sell.dto.RefCategoryDto">
+		<id property="refCategory" column="REF_CATEGORY"/>
+		<result property="refCategoryNm" column="REF_CATEGORY_NM"/>
+	</resultMap>
+	
+	<resultMap id="sellDtoResultMap" type="com.greedy.sarada.sell.dto.SellDto">
+		<id property="sellNo" column="SELL_NO"/>
+		<result property="sellNm" column="SELL_NM"/>
+		<result property="sellAddress" column="SELL_ADDRESS"/>
+		<result property="sellCategoryNm" column="SELL_CATEGORY_NM"/>
+		<result property="sellType" column="SELL_TYPE"/>
+		<result property="sellPhone" column="SELL_PHONE"/>
+		<result property="sellStatus" column="SELL_STATUS"/>
+		<result property="sellReqDate" column="SELL_REQ_DATE" />
+		<result property="sellRegiDate" column="SELL_REGI_DATE" />
+		<result property="sellerNo" column="SELLER_NO" />
+		<association property="user" resultMap="userResultMap"/>
+	</resultMap>
+	
+	<resultMap id="userResultMap" type="com.greedy.sarada.user.dto.UserDto">
+		<id property="userNo" column="USER_NO"/>
+		<result property="id" column="ID"/>
+		<result property="pwd" column="PWD"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="profileNm" column="PROFILE_NM"/>
+		<result property="phone" column="PHONE"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="joinDate" column="JOIN_DATE"/>
+		<result property="quitDate" column="QUIT_DATE"/>
+		<result property="userStatus" column="USER_STATUS"/>
+		<result property="snsToken" column="SNS_TOKEN"/>
+		<result property="email" column="EMAIL"/>
+		<collection property="userRoleList" resultMap="userRoleResultMap"/>
+	</resultMap>
+	
+	<resultMap id="userRoleResultMap" type="com.greedy.sarada.user.dto.UserRoleDto">
+		<id property="authNo" column="REF_AUTH_NO"/>
+		<id property="userNo" column="REF_USER_NO"/>
+		<association property="auth" resultMap="authResultMap"/>
+	</resultMap>
+	
+	<resultMap id="authResultMap" type="com.greedy.sarada.user.dto.AuthDto">
+		<id property="authNo" column="REF_AUTH_NO2"/>
+		<result property="authNm" column="AUTH_NM"/>
+		<result property="authDesc" column="AUTH_DESC"/>
+	</resultMap>
+	
+	<resultMap id="listResultMap" type="com.greedy.sarada.sell.dto.ListDto">
+		<id property="listNo" column="LIST_NO"/>
+		<result property="listNm" column="LIST_NM"/>
+		<result property="registDate" column="REGIST_DATE"/>
+		<result property="description" column="DESCRIPTION"/>
+		<result property="listNm" column="LIST_NM"/>
+		<association property="refCategoryCode" resultMap="RefCategoryResultMap"/>
+		<association property="sell" resultMap="sellDtoResultMap"/>
+		<association property="fileMain" resultMap="fileResultMap"/>
+		<collection property="ptList" resultMap="ptResultMap"/>
+		<collection property="fileImageList" resultMap="fileResultMap"/>
+	</resultMap>
+	
+	
+	<resultMap id="ptResultMap" type="com.greedy.sarada.sell.dto.PtDto">
+		<id property="ptNo" column="PT_NO"/>
+		<result property="ptNm" column="PT_NM"/>
+		<result property="price" column="PRICE"/>
+		<result property="stCount" column="ST_COUNT"/>
+		<result property="sellNo" column="SELL_NO"/>
+		<result property="ptDescrip" column="PT_DESCRIP"/>
+		<result property="ptSize" column="PT_SIZE"/>			
+		<result property="ptAuthor" column="PT_AUTHOR"/>			
+		<result property="listNo" column="LIST_NO"/>				
+		<result property="ptBundle" column="PT_BUNDLE"/>				
+		<association property="category" resultMap="sellCategoryResultMap"/>
+		<association property="sell" resultMap="sellDtoResultMap"/>
+		<association property="fileList" resultMap="fileResultMap"/>
+	</resultMap>
+	
+	<resultMap id="fileResultMap" type="com.greedy.sarada.sell.dto.FileDto">
+		<id property="fileNo" column="FILE_NO"/>
+		<result property="ptNo" column="PT_NO"/>
+		<result property="fileType" column="FILE_TYPE"/>
+		<result property="originalFileNm" column="ORIGINAL_FILE_NM"/>
+		<result property="savedFileNm" column="SAVED_FILE_NM"/>
+		<result property="filePath" column="FILE_PATH"/>
+		<result property="mainFilePath" column="MAIN_FILE_PATH"/>
+	</resultMap>
+	
+	<select id="findAllCategory" resultMap="sellCategoryResultMap">
+		SELECT
+				CATEGORY_CODE
+			 ,  CATEGORY_NAME
+			 ,  REF_CATEGORY
+		  FROM TB_CATEGORY
+	</select>
+	
+	<select id="findAllRefCategory" resultMap="RefCategoryResultMap">
+		SELECT
+				REF_CATEGORY
+			 ,  REF_CATEGORY_NM
+		  FROM TB_REF_CATEGORY
+	</select>
+	
+	<select id="findAllCategoryList" resultMap="sellCategoryResultMap">
+		SELECT
+				CATEGORY_CODE
+			 ,  CATEGORY_NAME
+			 ,  REF_CATEGORY
+		  FROM TB_CATEGORY
+		 WHERE REF_CATEGORY = #{ categoryCode }
+	</select>
+	
+	<select id="selectSeller" resultMap="sellDtoResultMap">
+		SELECT  
+			   SELL_NO
+			,  USER_NO
+			,  SELL_NM
+			,  SELL_ADDRESS
+			,  SELL_CATEGORY_NM
+			,  SELL_TYPE
+			,  SELL_PHONE
+			,  SELL_STATUS
+			,  SELL_REQ_DATE
+			,  SELLER_NO
+		 FROM TB_SELL 
+		WHERE USER_NO = #{ userNo }
+	</select>
+
+<!-- TB_FILE에 PT_NO가 없을 수 도 있기에 left 조인 -->
+<!-- 	<select id="productDetail" resultMap="listResultMap">
+		SELECT
+		 	   C.LIST_NM
+			 , A.PT_NO
+			 , A.PT_NM
+			 , A.PRICE
+			 , A.ST_COUNT
+			 , A.SELL_NO
+			 , A.LIST_NO
+			 , A.CATEGORY_CODE
+			 , A.PT_SIZE
+			 , A.PT_DESCRIP
+			 , A.PT_AUTHOR
+			 , B.FILE_NO
+			 , B.FILE_PATH
+		     , B.SAVED_FILE_NM
+		     , B.MAIN_FILE_PATH
+		     , B.FILE_TYPE
+	      FROM TB_PT A
+	      LEFT JOIN TB_FILE B ON(A.PT_NO = B.PT_NO)
+	      LEFT JOIN TB_LIST C ON(C.LIST_NO = A.LIST_NO)
+	     WHERE C.LIST_NO = #{ listNo }
+	</select> -->
+	
+	<select id="selectList" resultMap="listResultMap">
+        SELECT 
+			    A.LIST_NO
+			  , D.REF_CATEGORY
+			  , A.LIST_NM
+			  , A.REGIST_DATE
+			  , A.DESCRIPTION
+			  , A.SELL_NO
+			  , A.REF_CATEGORY_CODE
+              , C.MAIN_FILE_PATH
+              , C.SAVED_FILE_NM
+		  FROM TB_LIST A
+          JOIN TB_PT B ON (A.LIST_NO = B.LIST_no)
+          JOIN TB_FILE C ON (B.PT_NO = C.PT_NO)
+          JOIN TB_REF_CATEGORY D ON (A.REF_CATEGORY_CODE = D.REF_CATEGORY)
+		 WHERE A.LIST_NO = #{ listNo }
+           AND C.MAIN_FILE_PATH IS NOT NULL
+	</select>
+	
+	<select id="selectPtList" resultMap="ptResultMap">
+		SELECT 
+		       PT_NO
+			 , PT_NM
+			 , PRICE
+			 , ST_COUNT
+			 , SELL_NO
+			 , LIST_NO
+			 , CATEGORY_CODE
+			 , PT_SIZE
+			 , PT_DESCRIP
+			 , PT_AUTHOR
+			 , PT_BUNDLE
+	      FROM TB_PT
+	     WHERE LIST_NO = #{ listNo }
+	     ORDER BY PRICE
+	</select>
+	
+	<select id="selectFileList" resultMap="fileResultMap">
+		SELECT
+		       A.FILE_NO
+			 , A.PT_NO
+			 , B.PT_NM
+			 , A.FILE_TYPE
+			 , A.ORIGINAL_FILE_NM
+			 , A.SAVED_FILE_NM
+			 , A.FILE_PATH
+			 , A.MAIN_FILE_PATH
+	      FROM TB_FILE A
+	      JOIN TB_PT B ON (B.PT_NO = A.PT_NO)
+	     WHERE LIST_NO = #{ listNo }
+	</select >
+	
+	<insert id="sellRegist">
+		INSERT
+		    INTO TB_SELL
+		( SELL_NO
+		, USER_NO
+		, SELL_NM
+		, SELL_ADDRESS
+		, SELL_CATEGORY_NM
+		, SELL_TYPE
+		, SELL_PHONE
+		, SELL_STATUS
+		, SELL_REQ_DATE
+		, SELLER_NO
+		)VALUES
+		( 'SE'||(SEQ_SELL.NEXTVAL)
+		, #{ user.userNo}
+		, #{ sellNm }
+		, #{ sellAddress }
+		, #{ sellCategoryNm }
+		, #{ sellType }
+		, #{ sellPhone }
+		, #{ sellStatus }
+		, SYSDATE
+		, #{ sellerNo }
+		)
+	</insert>
+	<insert id="insertSellList">
+		INSERT 
+			INTO TB_LIST
+		( LIST_NO
+		, REF_CATEGORY_CODE
+		, LIST_NM
+		, REGIST_DATE
+		, DESCRIPTION
+		, SELL_NO
+		)VALUES
+		(
+		  'LI'||(SEQ_LIST.NEXTVAL)
+		, #{ refCategoryCode.refCategory}
+		, #{ listNm }
+		, SYSDATE
+		, #{ description }
+		, #{ sell.sellNo }
+		)
+	</insert>
+	<insert id="insertImage">
+		INSERT 
+			INTO TB_FILE
+		( FILE_NO
+		, PT_NO
+		, FILE_TYPE
+		, ORIGINAL_FILE_NM
+		, SAVED_FILE_NM
+		, FILE_PATH
+		, MAIN_FILE_PATH
+		)VALUES
+		(
+		  'FI'||(SEQ_FILE.NEXTVAL)
+		, 'PT'||(SEQ_PT.CURRVAL)
+		, #{ fileType }
+		, #{ originalFileNm }
+		, #{ savedFileNm }
+		, #{ filePath }
+		, #{ mainFilePath, jdbcType=VARCHAR }
+		)
+	</insert>
+	
+	<insert id="insertPt">
+		INSERT 
+			INTO TB_PT
+		( PT_NO
+		, PT_NM
+		, PRICE
+		, ST_COUNT
+		, SELL_NO
+		, PT_DESCRIP
+		, LIST_NO
+		, CATEGORY_CODE
+		, PT_SIZE
+		, PT_AUTHOR
+		, PT_BUNDLE
+		)VALUES
+		(
+		  'PT'||(SEQ_PT.NEXTVAL)
+		, #{ ptNm }
+		, #{ price }
+		, #{ stCount }
+		, #{ sell.sellNo }
+		, #{ ptDescrip }
+		, 'LI'||(SEQ_LIST.CURRVAL)
+		, #{ category.categoryCode }
+		, #{ ptSize }
+		, #{ ptAuthor }
+		, #{ ptBundle } 
+		)
+	</insert>
+
+	<insert id="insertSellMainImage">
+		INSERT 
+			INTO TB_FILE
+		( FILE_NO
+		, PT_NO
+		, FILE_TYPE
+		, ORIGINAL_FILE_NM
+		, SAVED_FILE_NM
+		, FILE_PATH
+		, MAIN_FILE_PATH
+		)VALUES
+		(
+		  'FI'||(SEQ_FILE.NEXTVAL)
+		, 'PT'||(SEQ_PT.CURRVAL)
+		, #{ fileType }
+		, #{ originalFileNm }
+		, #{ savedFileNm }
+		, #{ filePath, jdbcType=VARCHAR }
+		, #{ mainFilePath }
+		)
+	</insert>
+	
+	<select id="findSellRegist" resultMap="sellDtoResultMap">
+		SELECT 
+		       SELL_NO
+			 , USER_NO
+			 , SELL_NM
+			 , SELL_ADDRESS
+			 , SELL_CATEGORY_NM
+			 , SELL_TYPE
+			 , SELL_PHONE
+			 , SELL_STATUS
+			 , SELL_REQ_DATE
+			 , SELL_REGI_DATE
+			 , SELLER_NO
+		 FROM TB_SELL
+		WHERE USER_NO = #{ userNo }
+	</select>
+	
+	<select id="selectPtManageList" resultMap="ptResultMap">
+		SELECT
+		       A.PT_NO
+			 , A.PT_NM
+			 , A.PRICE
+			 , A.ST_COUNT
+			 , A.SELL_NO
+			 , A.LIST_NO
+	      FROM TB_PT A
+	      JOIN TB_SELL B ON (A.SELL_NO = B.SELL_NO)
+	      JOIN TB_USER C ON (B.USER_NO = C.USER_NO)
+	     WHERE C.USER_NO = #{ userNo }
+	</select>
+	
+	<select id="ptManage" resultMap="ptResultMap" >
+		SELECT
+		       PT_NO
+			 , PT_NM
+			 , PRICE
+			 , ST_COUNT
+			 , SELL_NO
+			 , LIST_NO
+			 , CATEGORY_CODE
+			 , PT_SIZE
+			 , PT_DESCRIP
+			 , PT_AUTHOR
+			 , PT_BUNDLE
+			 , PT_STATUS
+	     FROM TB_PT
+	    WHERE SELL_NO = #{ sellNo }
+	      AND PT_NO = #{ ptNo }
+	</select>
+	
+	<update id="ptUpdate">
+		UPDATE
+		       TB_PT
+		<trim prefix="SET">
+	  		 PRICE = #{ price }
+		     , ST_COUNT = #{ stCount }
+	  	<if test="ptSize != null">
+	  	    , PT_SIZE = #{ ptSize }
+	  	</if>
+		</trim>
+	   WHERE PT_NO = #{ ptNo }
+	     AND SELL_NO = #{ sellNo }
+	</update>
+</mapper>

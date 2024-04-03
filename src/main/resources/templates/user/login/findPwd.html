@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/user/login/CSS/findId.css">
+</head>
+<body>
+
+    <!-- <script>
+        const id = '[[${id}]]';
+        id && alert(id);
+    </script> -->
+<!-- action="/user/findPwd" method="post" -->
+    <div th:replace="common/header.html"></div>
+
+    <div class="wrapper">
+        <form class="login2">
+            <input type="text" id="id" class="id" name="id" placeholder="아이디"/>
+            <input type="text" id="phone" class="phone" name="phone" placeholder="휴대전화"/>
+            <input type="text" id="email" class="phone" name="email" placeholder="받을 이메일"/>
+            <input type="button" class="btn" value="비밀번호 찾기" id="findPwd2">
+        </form>
+    </div>
+</body>
+</html>

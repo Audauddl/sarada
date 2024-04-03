@@ -1,0 +1,83 @@
+@charset "UTF-8";
+
+body {
+    margin: 0;
+}
+
+.wrapper { 
+    margin: 0 auto; 
+    justify-content: start; 
+    display: grid;
+    margin: 13% auto;
+    margin-top: 100px;
+    min-width: 200px;
+    margin-left: 15px;
+    list-style: none;
+    grid-template-columns: 200px 1fr;
+}
+
+.myPageContents{
+    margin-left: 2rem;
+    grid-template-columns: 1fr;
+    width: calc(100% - 6rem);
+}
+
+.contentsBar {
+    grid-template-columns: 1fr;
+    border: 1px solid gray;
+    width: 100%;
+    text-align: center;
+    padding: 3rem;
+}
+
+table {
+    width: 70%;
+    margin-left: 10rem;
+    margin-top: 3%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+table th, td {
+    border: solid 1px black;
+    padding: 8px;
+}
+
+table th {
+    background-color: #85c1e9;
+    color: black;
+}
+
+table td {
+    min-width: 5%;
+}
+
+#twoTd {
+    border-bottom: none;
+}
+
+#twoTdImg {
+    border-top: none;
+}
+
+.pagingBtn{
+    width: 20px;
+    height: 20px;
+    margin: 5px;
+    border-radius: 12px;
+    background-color: white;
+    font-weight: bold;
+    /* border: 1px solid gray; */
+    border: none;
+    font-size: 10px;
+    color: #254F70;
+}
+
+.pagingBtn:disabled {
+    border: none;
+}
+
+.pagingBtn:hover{
+    cursor: pointer;
+
+}

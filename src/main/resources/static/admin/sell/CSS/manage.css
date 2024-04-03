@@ -1,0 +1,51 @@
+@charset "UTF-8";
+
+body {
+    margin: 0;
+}
+
+.wrapper { 
+    margin: 0 auto; 
+    justify-content: start; 
+    display: grid;
+    margin: 13% auto;
+    margin-top: 100px;
+    min-width: 200px;
+    margin-left: 15px;
+    list-style: none;
+    grid-template-columns: 200px 1fr;
+}
+
+.myPageContents{
+    margin-left: 2rem;
+    /* 전체 마진 빼기 마진 하는 보여야 한다.*/
+    width: calc(100% - 6rem);
+}
+
+.contentsBar {
+    border: 1px solid gray;
+    width: 100%;
+    text-align: center;
+    padding: 3rem;
+}
+
+.contentsBoard {
+    display: grid;
+    margin-top: 2rem;
+    grid-template-columns: auto auto auto;
+    grid-gap: 2rem;
+}
+
+.search{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.searchDiv{
+    margin-top: 2%;
+}
+
+#searchButton {
+    padding: 0;
+}

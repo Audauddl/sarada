@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greedy.sarada.user.dao.UserMapper">
+
+	<resultMap id="userResultMap" type="com.greedy.sarada.user.dto.UserDto">
+		<id property="userNo" column="USER_NO"/>
+		<result property="id" column="ID"/>
+		<result property="pwd" column="PWD"/>
+		<result property="userNm" column="USER_NM"/>
+		<result property="profileNm" column="PROFILE_NM"/>
+		<result property="phone" column="PHONE"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="joinDate" column="JOIN_DATE"/>
+		<result property="quitDate" column="QUIT_DATE"/>
+		<result property="userStatus" column="USER_STATUS"/>
+		<result property="snsToken" column="SNS_TOKEN"/>
+		<result property="email" column="EMAIL"/>
+		<result property="userType" column="USER_TYPE"/>
+		<collection property="userRoleList" resultMap="userRoleResultMap"/>
+	</resultMap>
+	
+	<resultMap id="userRoleResultMap" type="com.greedy.sarada.user.dto.UserRoleDto">
+		<id property="authNo" column="REF_AUTH_NO"/>
+		<id property="userNo" column="REF_USER_NO"/>
+		<association property="auth" resultMap="authResultMap"/>
+	</resultMap>
+	
+	<resultMap id="authResultMap" type="com.greedy.sarada.user.dto.AuthDto">
+		<id property="authNo" column="REF_AUTH_NO2"/>
+		<result property="authNm" column="AUTH_NM"/>
+		<result property="authDesc" column="AUTH_DESC"/>
+	</resultMap>
+	
+	<resultMap id="snsResultMap" type="com.greedy.sarada.provider.SnsDto">
+		<id property="snsNo" column="SNS_NO"/>
+		<result property="snsId" column="SNS_ID"/>
+		<result property="snsNm" column="SNS_NM"/>
+		<association property="user" resultMap="userResultMap"/>
+	</resultMap>
+	
+	<resultMap id="payResultMap" type="com.greedy.sarada.user.dto.PayDto">
+		<id property="payNo" column="PAY_NO"/>
+		<result property="payDate" column="PAY_DATE"/>
+		<result property="payMethod" column="PAY_METHOD"/>
+		<result property="payPrice" column="PAY_PRICE"/>
+		<result property="orderNo" column="ORDER_NO"/>
+		<result property="userNo" column="USER_NO"/>
+	</resultMap>
+	
+	<resultMap id="orderResultMap" type="com.greedy.sarada.user.dto.OrderDto">
+		<id property="orderNo" column="ORDER_NO"/>
+		<result property="orderPrice" column="ORDER_PRICE"/>
+		<result property="listNm" column="LIST_NM"/>
+		<result property="deliveryStatus" column="DELIVERY_STATUS"/>
+		<result property="orderDate" column="ORDER_DATE"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="listNo" column="LIST_NO"/>
+		
+		<association property="mainFile" resultMap="fileResultMap" />
+		<collection property="fileList" resultMap="fileResultMap" />
+		<collection property="orderItem" resultMap="orderItemResultMap" />
+	</resultMap>
+	
+		<resultMap id="fileResultMap" type="com.greedy.sarada.sell.dto.FileDto">
+		<id property="fileNo" column="FILE_NO"/>
+		<result property="fileType" column="FILE_TYPE"/>
+		<result property="originalFileNm" column="ORIGINAL_FILE_NM"/>
+		<result property="savedFileNm" column="SAVED_FILE_NM"/>
+		<result property="filePath" column="FILE_PATH"/>
+		<result property="mainFilePath" column="MAIN_FILE_PATH"/>
+	</resultMap>
+	
+	<resultMap id="orderItemResultMap" type="com.greedy.sarada.user.dto.OrderItemDto">
+		<id property="orderItemNo" column="ORDER_ITEM_NO"/>
+		<result property="ptNo" column="PT_NO"/>
+		<result property="orderNo" column="ORDER_NO"/>
+		<result property="orderCount" column="ORDER_COUNT"/>
+		<result property="ptNm" column="PT_NM"/>
+		<result property="ptSize" column="PT_SIZE"/>
+		<association property="pt" resultMap="ptResultMap" />
+	</resultMap>
+	
+	<resultMap id="ptResultMap" type="com.greedy.sarada.sell.dto.PtDto">
+		<id property="ptNo" column="PT_NO"/>
+		<result property="ptNm" column="PT_NM"/>
+		<result property="price" column="PRICE"/>
+		<result property="stCount" column="ST_COUNT"/>
+		<result property="ptDescrip" column="PT_DESCRIP"/>
+		<result property="ptSize" column="PT_SIZE"/>			
+		<result property="ptAuthor" column="PT_AUTHOR"/>			
+		<result property="listNo" column="LIST_NO"/>				
+		<result property="ptBundle" column="PT_BUNDLE"/>
+		<association property="category" resultMap="sellCategoryResultMap" />
+	</resultMap>
+	
+	<resultMap id="refundResultMap" type="com.greedy.sarada.user.dto.RefundDto">
+		<id property="refundNo" column="REFUND_NO"/>
+		<result property="orderNo" column="ORDER_NO"/>
+		<result property="refundPrice" column="REFUND_PRICE"/>
+		<result property="refundDate" column="REFUND_DATE"/>
+		<result property="refundStatus" column="REFUND_STATUS"/>
+		<result property="listNm" column="LIST_NM"/>
+		<result property="userNo" column="USER_NO"/>
+		<association property="orderList" resultMap="orderResultMap"/>
+		
+	</resultMap>
+	
+		<resultMap id="replyResultMap" type="com.greedy.sarada.user.dto.ReplyDto">
+		<id property="replyNo" column="REPLY_NO"/>
+		<result property="refListNo" column="REF_LIST_NO"/>
+		<result property="replyBody" column="REPLY_BODY"/>
+		<result property="replyStatus" column="REPLY_STATUS"/>
+		<result property="replyDate" column="REPLY_DATE"/>
+		
+		<association property="writer" resultMap="userResultMap"/>
+	</resultMap>
+	
+	<resultMap id="sellCategoryResultMap" type="com.greedy.sarada.sell.dto.CategoryDto">
+		<id property="categoryCode" column="CATEGORY_CODE"/>
+		<result property="categoryName" column="CATEGORY_NAME"/>
+		<result property="refCategory" column="REF_CATEGORY"/>
+	</resultMap>
+	
+	<select id="findByUserId" resultMap="userResultMap">
+		   SELECT
+               A.USER_NO
+		     , A.ID
+             , A.PWD
+		     , A.USER_NM
+		     , A.PROFILE_NM
+		     , A.PHONE
+		     , A.ADDRESS
+		     , A.JOIN_DATE
+		     , A.QUIT_DATE
+		     , A.USER_STATUS
+		     , A.SNS_TOKEN
+		     , A.EMAIL
+		     , B.USER_NO REF_USER_NO
+		     , B.AUTH_NO REF_AUTH_NO
+		     , C.AUTH_NO REF_AUTH_NO2
+		     , C.AUTH_NM
+		     , C.AUTH_DESC
+          FROM TB_USER A
+          LEFT JOIN TB_USER_ROLE B ON (A.USER_NO = B.USER_NO)
+		  LEFT JOIN TB_AUTH C ON (B.AUTH_NO = C.AUTH_NO)
+         WHERE A.USER_STATUS = 'Y'
+           AND A.ID = #{ id }
+	</select>
+	
+	<select id="findByUserId2" resultMap="userResultMap">
+		   SELECT
+               A.USER_NO
+		     , A.ID
+             , A.PWD
+		     , A.USER_NM
+		     , A.PROFILE_NM
+		     , A.PHONE
+		     , A.ADDRESS
+		     , A.JOIN_DATE
+		     , A.QUIT_DATE
+		     , A.USER_STATUS
+		     , A.SNS_TOKEN
+		     , A.EMAIL
+		     , B.USER_NO REF_USER_NO
+		     , B.AUTH_NO REF_AUTH_NO
+		     , C.AUTH_NO REF_AUTH_NO2
+		     , C.AUTH_NM
+		     , C.AUTH_DESC
+          FROM TB_USER A
+          LEFT JOIN TB_USER_ROLE B ON (A.USER_NO = B.USER_NO)
+		  LEFT JOIN TB_AUTH C ON (B.AUTH_NO = C.AUTH_NO)
+         WHERE A.USER_STATUS = 'N'
+           AND A.ID = #{ id }
+	</select>
+	
+	<select id="selectById" resultType="string">
+        SELECT
+               ID
+          FROM TB_USER
+         WHERE ID = #{ id }
+    </select>
+    
+    <select id="selectByProviderId" resultType="string">
+        SELECT
+               SNS_ID
+          FROM TB_SNS 
+          WHERE SNS_ID = #{ snsId }
+    </select>
+	
+	<insert id="insertUser">
+		INSERT
+		  INTO TB_USER
+		(
+	      USER_NO
+		, ID
+		, PWD
+		, USER_NM
+		, PHONE
+		, ADDRESS
+		, JOIN_DATE
+		, SNS_TOKEN
+		, EMAIL
+		, USER_TYPE
+		)
+		VALUES
+		(
+		  'US'||(SEQ_USER.NEXTVAL)
+		, #{ id }
+		, #{ pwd }
+		, #{ userNm }
+		, #{ phone }
+		, #{ address }
+		, SYSDATE
+		, #{ snsToken }
+		, #{ email }
+		, #{ userType }
+		)
+		
+	</insert>
+
+
+	<insert id="insertSns">
+		INSERT
+		  INTO TB_SNS
+		(
+		  SNS_NO
+		, SNS_ID
+		, USER_NO
+		, SNS_NM
+		)
+		VALUES
+		(
+		  'SNS'||(SEQ_SNS.NEXTVAL)
+		, #{ snsId }
+		, 'US'||(SEQ_USER.CURRVAL)
+		, #{ snsNm }
+		)
+	</insert>
+	
+	<insert id="insertUserRole">
+		INSERT
+          INTO TB_USER_ROLE
+        (
+          USER_NO
+        , AUTH_NO  
+        
+        )
+        VALUES
+        (
+          'US'||(SEQ_USER.CURRVAL)
+        , 'AU2'
+        )
+	</insert>
+	
+	<update id="modifyUser">
+		UPDATE
+		      TB_USER
+		  SET PHONE = #{ phone }
+		    , ADDRESS = #{ address }
+		WHERE USER_STATUS = 'Y'
+		  AND ID = #{ id }
+	</update>
+	
+	<select id="findByUserById" resultType="String">
+		SELECT
+		       ID
+		  FROM TB_USER
+		 WHERE USER_NM = #{ userNm }
+		   AND PHONE = #{ phone } 
+	</select>
+	
+	<select id="SelectOrderLists" resultMap="orderResultMap">
+		SELECT 
+		       A.ORDER_NO
+			 , A.ORDER_PRICE
+			 , A.LIST_NM
+			 , A.DELIVERY_STATUS
+			 , A.ORDER_DATE
+			 , A.USER_NO
+			 , A.LIST_NO
+			 , B.PT_NO
+			 , C.MAIN_FILE_PATH
+			 , C.SAVED_FILE_NM
+		 FROM TB_ORDER A
+		 JOIN TB_PT B ON (A.LIST_NO = B.LIST_NO)
+		 JOIN TB_FILE C ON(B.PT_NO = C.PT_NO)
+		WHERE A.USER_NO = #{ userNo }
+	    ORDER BY A.ORDER_DATE DESC
+	</select>
+	
+	<select id="selectOrderReadyCounting">
+		SELECT 
+		       COUNT(DELIVERY_STATUS)
+		  FROM TB_ORDER
+		 WHERE USER_NO = #{ userNo }
+		   AND DELIVERY_STATUS = '준비중' 
+	</select>
+	
+	<select id="selectOrderCount" resultType="_int" parameterType="hashmap">
+		SELECT
+			   COUNT(*)
+		FROM TB_ORDER A
+		<where>
+        <if test="searchMap.searchValue != null">
+            AND (
+                A.ORDER_NO LIKE '%' || #{ searchMap.searchValue } || '%' OR
+                A.ORDER_PRICE LIKE '%' || #{ searchMap.searchValue } || '%' OR
+                A.LIST_NM LIKE '%' || #{ searchMap.searchValue } || '%' OR
+                A.DELIVERY_STATUS LIKE '%' || #{ searchMap.searchValue } || '%' OR
+                A.ORDER_DATE LIKE '%' || #{ searchMap.searchValue } || '%' OR
+                A.USER_NO LIKE '%' || #{ searchMap.searchValue } || '%' OR
+                A.LIST_NO LIKE '%' || #{ searchMap.searchValue } || '%'
+            )
+        </if>
+		</where>
+	</select>
+	
+	<select id="selectOrderList" resultMap="orderResultMap">
+	    SELECT *
+	    FROM (
+	        SELECT 
+	            A.ORDER_NO,
+	            A.ORDER_PRICE,
+	            A.LIST_NM,
+	            A.DELIVERY_STATUS,
+	            A.ORDER_DATE,
+	            A.USER_NO,
+	            A.LIST_NO,
+	            B.PT_NO,
+	            C.MAIN_FILE_PATH,
+	            C.SAVED_FILE_NM,
+	            ROW_NUMBER() OVER (ORDER BY A.ORDER_DATE DESC) AS RNUM
+	        FROM TB_ORDER A
+	        JOIN TB_PT B ON (A.LIST_NO = B.LIST_NO)
+	        JOIN TB_FILE C ON (B.PT_NO = C.PT_NO)
+	        WHERE A.USER_NO = #{ userNo }
+	          AND C.MAIN_FILE_PATH IS NOT NULL
+	        <if test="selectCriteria.searchValue != null">
+	            AND (
+	                A.ORDER_NO LIKE '%' || #{ selectCriteria.searchValue } || '%' OR
+	                A.ORDER_PRICE LIKE '%' || #{ selectCriteria.searchValue  } || '%' OR
+	                A.LIST_NM LIKE '%' || #{ selectCriteria.searchValue } || '%' OR
+	                A.DELIVERY_STATUS LIKE '%' || #{ selectCriteria.searchValue } || '%' OR
+	                A.ORDER_DATE LIKE '%' || #{ selectCriteria.searchValue } || '%' OR
+	                A.USER_NO LIKE '%' || #{ selectCriteria.searchValue } || '%' OR
+	                A.LIST_NO LIKE '%' || #{ selectCriteria.searchValue } || '%'
+	            )
+	        </if>
+	    )
+	    WHERE RNUM BETWEEN #{ selectCriteria.startRow } AND #{ selectCriteria.endRow }
+	    ORDER BY RNUM
+	</select>
+	
+	<select id="selectOrderDetail" resultMap="orderResultMap">
+		SELECT
+		       A.ORDER_NO
+			 , A.ORDER_PRICE
+			 , A.LIST_NM
+			 , A.DELIVERY_STATUS
+			 , A.ORDER_DATE
+			 , A.USER_NO
+			 , A.LIST_NO
+			 , B.PT_NO
+	         , B.ORDER_COUNT
+			 , B.PT_NM
+			 , B.PT_SIZE
+			 , C.PRICE
+			 , D.SAVED_FILE_NM
+			 , D.FILE_PATH
+			 , D.MAIN_FILE_PATH
+			 , E.REF_CATEGORY
+		  FROM TB_ORDER A
+		  JOIN ORDER_ITEM B ON (A.ORDER_NO = B.ORDER_NO)
+		  JOIN TB_PT C ON (B.PT_NO = C.PT_NO)
+		  JOIN TB_CATEGORY E ON(C.CATEGORY_CODE = E.CATEGORY_CODE)
+		  LEFT JOIN TB_FILE D ON (C.PT_NO = D.PT_NO)
+		 WHERE A.USER_NO = #{ userNo }
+		   AND A.ORDER_NO = #{ orderNo }
+	</select>
+	
+	<select id="findPayNo" resultType="java.lang.String">
+		SELECT 
+		       PAY_NO
+		  FROM TB_PAY
+		 WHERE ORDER_NO = #{ orderNo }
+	</select>
+	<insert id="insertOrderItem">
+		INSERT INTO
+		         ORDER_ITEM
+		( ORDER_ITEM_NO
+		, ORDER_NO
+		, PT_NO
+		, ORDER_COUNT
+		, PT_NM
+		, PT_SIZE
+		)VALUES
+		( 'OR'||(SEQ_ORDERITEM.NEXTVAL)
+		, #{ orderNo }
+		, #{ ptNo }
+		, #{ orderCount }
+		, #{ ptNm }
+		, #{ ptSize }
+		)
+	</insert>
+	<insert id="insertOrder">
+		INSERT INTO
+			     TB_ORDER
+			( ORDER_NO
+			, ORDER_PRICE
+			, LIST_NM
+			, DELIVERY_STATUS
+			, ORDER_DATE
+			, USER_NO
+			, LIST_NO
+			)VALUES
+			( #{ orderNo }
+			, #{ orderPrice }
+			, #{ listNm }
+			, #{ deliveryStatus }
+			, SYSDATE
+			, #{ userNo }
+			, #{ listNo }
+			)
+	</insert>
+	<insert id="insertPay">
+		INSERT INTO
+				 TB_PAY
+			( PAY_NO
+			, PAY_DATE
+			, PAY_METHOD
+			, PAY_PRICE
+			, ORDER_NO
+			, USER_NO
+			)VALUES
+			(
+			  #{ payNo }
+			, SYSDATE
+			, #{ payMethod }
+			, #{ payPrice }
+			, #{ orderNo }
+			, #{ userNo }
+			)
+	</insert>
+	
+	<insert id="inserRefund">
+		INSERT INTO
+		         TB_REFUND
+			( REFUND_NO
+			, ORDER_NO
+			, REFUND_PRICE
+			, REFUND_DATE
+			, REFUND_STATUS
+			, LIST_NM
+			)VALUES(
+			 'RE'||(SEQ_REFUND.NEXTVAL)
+			, #{ orderNo }
+			, #{ refundPrice }
+			, SYSDATE
+			, 'Y'
+			, #{ listNm }
+			)
+	</insert>
+	
+	<select id="findListNm" resultType="java.lang.String">
+		SELECT
+		       LIST_NM
+		  FROM TB_ORDER
+		 WHERE ORDER_NO = #{ orderNo }
+	</select>
+	
+	<insert id="replyInsert">
+		INSERT INTO 
+			     TB_REPLY
+		( REPLY_NO
+		, REF_LIST_NO
+		, REPLY_BODY
+		, REPLY_WRITER_USER_NO
+		, REPLY_STATUS
+	    , REPLY_DATE
+		)VALUES
+		( SEQ_REPLY.NEXTVAL
+		, #{ refListNo }
+		, #{ replyBody }
+		, #{ writer.userNo } 
+		, 'Y'
+		, SYSDATE
+		)
+	</insert>
+	
+	<select id="selectReplyTotalCount" resultType="_int" parameterType="hashmap">
+		SELECT
+		       COUNT(*)
+		  FROM TB_REPLY
+		 WHERE REF_LIST_NO = #{ refListNo }
+	</select>
+	
+	<select id="selectReplyList" resultMap="replyResultMap">
+    SELECT *
+		  FROM (
+		        SELECT 
+				       REPLY_NO
+					 , REF_LIST_NO
+					 , REPLY_BODY
+					 , REPLY_WRITER_USER_NO
+					 , REPLY_STATUS
+					 , REPLY_DATE
+					 , C.ID
+					 , ROW_NUMBER() OVER (ORDER BY A.REPLY_DATE DESC) AS RNUM
+			      FROM TB_REPLY A 
+                  JOIN TB_LIST B ON (A.REF_LIST_NO = B.LIST_NO)
+                  JOIN TB_USER C ON (A.REPLY_WRITER_USER_NO = C.USER_NO)
+                  WHERE A.REF_LIST_NO = #{ refListNo }
+                )
+	     WHERE RNUM BETWEEN #{ selectCriteria.startRow } AND #{ selectCriteria.endRow }
+	     ORDER BY RNUM
+	</select>
+	
+	<select id="replyCheck" resultMap="replyResultMap">
+		SELECT 
+		       REPLY_NO
+			 , REF_LIST_NO
+			 , REPLY_BODY
+			 , REPLY_WRITER_USER_NO
+			 , REPLY_STATUS
+			 , REPLY_DATE
+			 , C.ID
+		  FROM TB_REPLY A
+		  JOIN TB_LIST B ON (A.REF_LIST_NO = B.LIST_NO)
+		  JOIN TB_USER C ON (A.REPLY_WRITER_USER_NO = C.USER_NO)
+		 WHERE A.REF_LIST_NO = #{ listNo }
+		   AND A.REPLY_WRITER_USER_NO = #{ user.userNo }
+	</select>
+	
+	<select id="orderCheck" resultMap="orderResultMap">
+		SELECT 
+		       A.LIST_NO
+		  FROM TB_ORDER A
+		 WHERE A.LIST_NO = #{ listNo }
+		   AND A.USER_NO = #{ userNo }
+	</select>
+	
+	<update id="replyUpdate">
+		UPDATE
+		    TB_REPLY
+		   SET REPLY_BODY = #{ replyBody }
+		     , REPLY_DATE = SYSDATE
+		WHERE REF_LIST_NO = #{ refListNo }
+		   AND REPLY_WRITER_USER_NO = #{ writer.userNo }
+	</update>
+	
+	<select id="findUserByEmailId" resultMap="userResultMap">
+		SELECT *
+		  FROM TB_USER
+		 WHERE ID = #{ id }
+	</select>
+	
+	<select id="findUserByUserType" resultType="string">
+	    SELECT USER_TYPE
+		  FROM TB_USER
+		 WHERE ID = #{ id }
+		   AND PHONE = #{ phone }
+	</select>
+	
+	<insert id="updatePT">
+	    UPDATE 
+	    		TB_USER 	
+	    SET PWD = #{ pwd }
+	    WHERE ID = #{ id }
+	</insert>
+	
+	<select id="selectRefundTotalCount" resultType="_int" parameterType="hashmap">
+		SELECT 
+		       COUNT(REFUND_STATUS)
+		  FROM TB_REFUND
+		 WHERE USER_NO = #{ userNo }
+		   AND REFUND_STATUS = 'Y' 
+	</select>
+
+	<select id="selectRefundList" resultMap="refundResultMap">
+    SELECT *
+		  FROM (
+		        SELECT 
+				       A.REFUND_NO
+					 , A.ORDER_NO
+					 , A.REFUND_PRICE
+					 , A.REFUND_DATE
+					 , A.REFUND_STATUS
+					 , A.LIST_NM
+					 , A.USER_NO
+					 , D.MAIN_FILE_PATH
+	                 , D.SAVED_FILE_NM
+					 , ROW_NUMBER() OVER (ORDER BY A.REFUND_DATE DESC) AS RNUM
+			      FROM TB_REFUND A
+					JOIN TB_ORDER B ON (A.ORDER_NO = B.ORDER_NO)
+			        JOIN TB_PT C ON (B.LIST_NO = C.LIST_NO)
+			        JOIN TB_FILE D ON (C.PT_NO = D.PT_NO)
+			        WHERE A.USER_NO = #{ userNo }
+			          AND D.MAIN_FILE_PATH IS NOT NULL
+                )
+	     WHERE RNUM BETWEEN #{ selectCriteria.startRow } AND #{ selectCriteria.endRow }
+	     ORDER BY RNUM
+	</select>
+	
+	<select id="findPtStCount" resultType="_int">
+		SELECT
+		       ST_COUNT - #{ stCount } 
+		  FROM TB_PT
+		 WHERE PT_NO = #{ ptNo }
+	</select>
+	
+	<update id="updatePtCount">
+		UPDATE TB_PT
+		   SET ST_COUNT = ST_COUNT - #{ stCount }
+		 WHERE PT_NO = #{ ptNo }
+	</update>
+	
+	<update id="removeUser">
+		UPDATE TB_USER
+		   SET USER_STATUS = 'N'
+		 WHERE USER_NO = #{ userNo } 
+	</update>
+</mapper>
+
+

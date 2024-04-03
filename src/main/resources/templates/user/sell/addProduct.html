@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/user/sell/CSS/addProduct.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <div th:replace="user/sell/sellSideBar.html"></div>
+        <div class="myPageContents">
+            <div class="mYConetentsBar">
+                <h2>판매 등록</h2>              
+                <form id="sellForm" action="/sell/addProduct" method="post" enctype="multipart/form-data">
+                    <label for="listNm">판매글 제목:</label>
+                    <input type="text" id="listNm" class="itemInput" name="listNm" required>
+                    
+                    <label for="sellCategory">상위 카테고리:</label>
+                    <select id="sellCategory" name="refCategoryCode.refCategory" required>
+                    </select>
+
+                    <label for="main-image" class="upload">대표 사진</label>
+                    <input type="file" id="main-image[0]" name="attachImageMain" accept="image/gif, image/jpeg, image/png" multiple required>
+                    
+                    
+                    <label for="fileView">파일 미리보기</label>
+                    <div class="image-area" name="fileView[0]">
+                        <img style="width: 650px; height: 450px;">
+                    </div>
+
+                    <label for="sellDescription">판매 설명:</label>
+                    <textarea id="sellDescription" class="itemInput" name="sellDescription"></textarea>
+                    
+                    <!-- <label for="sellCategory">카테고리:</label>
+                    <select id="sellCategory" name="refCategoryCode.refCategory" required>
+                    </select> -->
+                    
+                    <div id="itemsContainer">
+                        <div class="item">
+                            <label>상품 등록</label>
+                            
+                            <label for="ptNm">이름</label>
+                            <input type="text" id="ptNm" class="itemInput" name="ptList[0].ptNm" required>
+
+                            <label for="sellPtCategory">상세 카테고리:</label>
+                            <select id="sellPtCategory" class="sellPtCategory" name="ptList[0].category.categoryCode" required>
+
+                            <label for="main-image" class="upload">상품 사진</label>
+                            <input type="file" id="main-image[0]" name="attachImage[0]" accept="image/gif, image/jpeg, image/png" multiple>
+
+                            <label for="fileView">파일 미리보기</label>
+                            <div class="image-area" name="fileView[0]">
+                                <img style="width: 120px; height: 100px;">
+                            </div>
+
+                            <label for="main-image" class="upload">상품 사진</label>
+                            <input type="file" id="main-image[0]" name="attachImage[0]" accept="image/gif, image/jpeg, image/png" multiple>
+                            
+                            <label for="fileView">파일 미리보기</label>
+                            <div class="image-area" name="fileView[0]">
+                                <img style="width: 120px; height: 100px;">
+                            </div>
+                            
+                            <button type="button" id="fileAdd">파일 추가</button>
+                            
+                            <label for="ptDescrip">상품 설명</label>
+                            <textarea class="itemInput" id="ptDescrip" name="ptList[0].ptDescrip"></textarea>
+                            
+                            <label for="ptSize" class="ptSizeLabel">사이즈</label>
+                            <select id="ptSize" class="ptSize" name="ptList[0].ptSize">
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="X">X</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                            </select>
+
+                            <!-- <div class="diq">
+                                <input type="checkbox" id="bundlech0">
+                                <label for="bundlech0" id="bundelText">묶음 여부</label>
+                            </div>
+
+                            <label for="bundle0" class="bundle0">묶음 개수</label>
+                            <input type="number" id="bundle0" class="bundle0" name="ptList[0].ptBundle"> -->
+                            
+                            <label for="author" class="authorLabel">저자</label>
+                            <input type="text" id="author" class="author" name="ptList[0].ptAuthor">
+                            
+                            <label for="price">가격</label>
+                            <input type="number" id="price" class="itemInput" name="ptList[0].price" required>
+                            
+                            <label for="stCount">재고</label>
+                            <input type="number" id="stCount" class="itemInput" name="ptList[0].stCount" required>
+
+                            <button type="button" class="removeItemBtn">상품 삭제</button>
+                        </div>
+                    </div>
+                
+                    <button type="button" id="addItemBtn">상품 추가</button>
+                    <button type="submit" id="sellRegistInfo">판매 등록</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

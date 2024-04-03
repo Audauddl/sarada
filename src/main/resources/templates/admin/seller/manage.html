@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http//www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/admin/sell/CSS/manage.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+</head>
+<body>
+    
+    <div class="wrapper">
+        <div th:replace="admin/common/adminSideBar.html"></div>
+        <div class="myPageContents">
+            <div class="mYConetentsBar">
+              <div class="search">
+                <th:block th:if="${paging != null}">
+                  <th:block th:if="${paging.searchCondition eq 'req'}">
+                      <h2>판매자 신청 리스트</h2>
+                  </th:block>
+                  <th:block th:if="${paging.searchCondition eq 'regist'}">
+                      <h2>판매자 승인 리스트</h2>
+                  </th:block>
+                  <th:block th:if="${paging.searchCondition eq 'reject'}">
+                      <h2>판매자 거절 리스트</h2>
+                  </th:block>
+                </th:block>
+                <th:block th:if="${paging == null}">
+                    <h2>판매자 신청 리스트</h2>
+                </th:block>
+                  <div class="searchDiv">
+                  <form action="/admin/sellSearchList" method="get">
+                    <select id="searchCondition" name="searchCondition">
+                        <option value="regist">승인</option>
+                        <option value="req" selected>신청</option>
+                        <option value="reject">반려</option>
+                    </select>
+                      <input type="search" name="searchValue">
+                        <button id="searchButton" type="submit">검색</button>
+                  </form>
+                  </div>
+              </div>
+              <table class="contentsBar">
+                <tr>
+                    <th>신청 일자</th>
+                    <th>사업자 번호</th>
+                    <th>상호명</th>
+                    <th>주소</th>
+                    <th>업종</th>
+                    <th>사업체</th>
+                    <th>번호</th>
+                    <th>아이디</th>
+                </tr>
+                <tr th:each="sell : ${ sellList }"
+                th:onclick="|location.href='@{/admin/reqDetail?(sellNo=${sell.sellNo})}'|"
+                >
+                    <td th:text="${#strings.substring(sell.sellReqDate, 0, 10)}"></td>
+                    <td th:text="${ sell.sellerNo }"></td>
+                    <td th:text="${ sell.sellNm }"></td>
+                    <td th:text="${ sell.sellAddress.replaceAll('[$]', ' ') }"></td>
+                    <td th:text="${ sell.sellCategoryNm }"></td>
+                    <td th:text="${ sell.sellType }"></td>
+                    <td th:text="${ sell.sellPhone }"></td>
+                    <td th:text="${ sell.user.id }"></td>
+			    </tr>
+              </table>
+          </div>
+        </div>
+      </body>
+</html>

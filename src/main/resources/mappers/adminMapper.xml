@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greedy.sarada.admin.dao.AdminMapper">
+
+	<resultMap id="sellCategoryResultMap"
+		type="com.greedy.sarada.sell.dto.CategoryDto">
+		<id property="categoryCode" column="CATEGORY_CODE" />
+		<result property="categoryName" column="CATEGORY_NAME" />
+		<result property="refCategory" column="REF_CATEGORY" />
+	</resultMap>
+
+	<resultMap id="RefCategoryResultMap"
+		type="com.greedy.sarada.sell.dto.RefCategoryDto">
+		<id property="refCategory" column="REF_CATEGORY" />
+		<result property="refCategoryNm" column="REF_CATEGORY_NM" />
+	</resultMap>
+
+	<resultMap id="sellDtoResultMap"
+		type="com.greedy.sarada.sell.dto.SellDto">
+		<id property="sellNo" column="SELL_NO" />
+		<result property="sellNm" column="SELL_NM" />
+		<result property="sellAddress" column="SELL_ADDRESS" />
+		<result property="sellCategoryNm" column="SELL_CATEGORY_NM" />
+		<result property="sellType" column="SELL_TYPE" />
+		<result property="sellPhone" column="SELL_PHONE" />
+		<result property="sellStatus" column="SELL_STATUS" />
+		<result property="sellReqDate" column="SELL_REQ_DATE" />
+		<result property="sellRegiDate" column="SELL_REGI_DATE" />
+		<result property="sellerNo" column="SELLER_NO" />
+		<association property="user" resultMap="userResultMap" />
+	</resultMap>
+
+	<resultMap id="userResultMap"
+		type="com.greedy.sarada.user.dto.UserDto">
+		<id property="userNo" column="USER_NO" />
+		<result property="id" column="ID" />
+		<result property="pwd" column="PWD" />
+		<result property="userNm" column="USER_NM" />
+		<result property="profileNm" column="PROFILE_NM" />
+		<result property="phone" column="PHONE" />
+		<result property="address" column="ADDRESS" />
+		<result property="joinDate" column="JOIN_DATE" />
+		<result property="quitDate" column="QUIT_DATE" />
+		<result property="userStatus" column="USER_STATUS" />
+		<result property="snsToken" column="SNS_TOKEN" />
+		<result property="email" column="EMAIL" />
+		<collection property="userRoleList"
+			resultMap="userRoleResultMap" />
+	</resultMap>
+
+	<resultMap id="userRoleResultMap"
+		type="com.greedy.sarada.user.dto.UserRoleDto">
+		<id property="authNo" column="REF_AUTH_NO" />
+		<id property="userNo" column="REF_USER_NO" />
+		<association property="auth" resultMap="authResultMap" />
+	</resultMap>
+
+	<resultMap id="authResultMap"
+		type="com.greedy.sarada.user.dto.AuthDto">
+		<id property="authNo" column="REF_AUTH_NO2" />
+		<result property="authNm" column="AUTH_NM" />
+		<result property="authDesc" column="AUTH_DESC" />
+	</resultMap>
+	
+	<resultMap id="listResultMap" type="com.greedy.sarada.sell.dto.ListDto">
+		<id property="listNo" column="LIST_NO"/>
+		<result property="listNm" column="LIST_NM"/>
+		<result property="registDate" column="REGIST_DATE"/>
+		<result property="description" column="DESCRIPTION"/>
+		<result property="listNm" column="LIST_NM"/>
+		<association property="refCategoryCode" resultMap="RefCategoryResultMap"/>
+		<association property="sell" resultMap="sellDtoResultMap"/>
+		<association property="fileMain" resultMap="fileResultMap"/>
+		<collection property="ptList" resultMap="ptResultMap"/>
+		<collection property="fileImageList" resultMap="fileResultMap"/>
+	</resultMap>
+	
+	
+	<resultMap id="ptResultMap" type="com.greedy.sarada.sell.dto.PtDto">
+		<id property="ptNo" column="PT_NO"/>
+		<result property="ptNm" column="PT_NM"/>
+		<result property="price" column="PRICE"/>
+		<result property="stCount" column="ST_COUNT"/>
+		<result property="ptDescrip" column="PT_DESCRIP"/>
+		<result property="listNo" column="LIST_NO"/>				
+		<result property="ptSize" column="PT_SIZE"/>			
+		<result property="ptAuthor" column="PT_AUTHOR"/>
+		<result property="ptBundle" column="PT_BUNDLE"/>				
+		<association property="category" resultMap="sellCategoryResultMap"/>
+		<association property="sell" resultMap="sellDtoResultMap"/>
+		<association property="fileList" resultMap="fileResultMap"/>
+	</resultMap>
+	
+	<resultMap id="fileResultMap" type="com.greedy.sarada.sell.dto.FileDto">
+		<id property="fileNo" column="FILE_NO"/>
+		<result property="fileType" column="FILE_TYPE"/>
+		<result property="originalFileNm" column="ORIGINAL_FILE_NM"/>
+		<result property="savedFileNm" column="SAVED_FILE_NM"/>
+		<result property="filePath" column="FILE_PATH"/>
+		<result property="mainFilePath" column="MAIN_FILE_PATH"/>
+	</resultMap>
+	
+	<select id="findSellRegistList" resultMap="sellDtoResultMap">
+		SELECT
+		A.SELL_NO
+		, A.USER_NO
+		, A.SELL_NM
+		, A.SELL_ADDRESS
+		, A.SELL_CATEGORY_NM
+		, A.SELL_TYPE
+		, A.SELL_PHONE
+		, A.SELL_STATUS
+		, A.SELL_REQ_DATE
+		, A.SELL_REGI_DATE
+		, B.ID
+		, B.USER_NM
+		FROM TB_SELL A
+		JOIN TB_USER B ON (A.USER_NO = B.USER_NO)
+	   WHERE A.SELL_STATUS = '대기'
+	</select>
+
+	<select id="selectSellTotalCount" resultType="_int" parameterType="hashmap">
+		SELECT
+			   COUNT(*)
+		FROM TB_SELL A
+	    JOIN TB_USER B ON(A.USER_NO = B.USER_NO)
+		<where>
+			<if test="searchCondition == 'req'">
+				A.SELL_STATUS = '대기'
+			</if>
+			<if test="searchCondition == 'regist'">
+				A.SELL_STATUS = '승인'
+			</if>
+			AND (
+				A.SELL_CATEGORY_NM LIKE '%' || #{ searchValue } || '%' OR
+				A.SELL_NO LIKE '%' || #{ searchValue } || '%' OR
+				A.USER_NO LIKE '%' || #{ searchValue } || '%' OR
+				A.SELL_NM LIKE '%' || #{ searchValue } || '%' OR
+				A.SELL_ADDRESS LIKE '%' || #{ searchValue } || '%' OR
+				A.SELL_TYPE LIKE '%' || #{ searchValue } || '%' OR
+				A.SELL_PHONE LIKE '%' || #{ searchValue } || '%' OR
+				B.ID LIKE '%' || #{ searchValue } || '%'
+			)
+		</where>
+	</select>
+	
+	<select id="selectListTotalCount" resultType="_int" parameterType="hashmap">
+        SELECT 
+        	   COUNT(*)
+          FROM TB_LIST A
+        <if test="searchCondition == 'title'">
+          JOIN TB_REF_CATEGORY B ON(A.REF_CATEGORY_CODE = B.REF_CATEGORY)
+          JOIN TB_CATEGORY C ON(B.REF_CATEGORY = C.REF_CATEGORY)
+        <where>
+            <if test="searchCondition == 'title'">
+                C.CATEGORY_NAME LIKE '%' || #{ searchValue } || '%'
+            </if>
+        </where>        
+        </if>
+            ORDER BY A.REGIST_DATE
+	</select>
+	
+	<select id="selectSellList" resultMap="sellDtoResultMap">
+	    SELECT
+	        A.SELL_NO,
+	        A.USER_NO,
+	        A.SELL_NM,
+	        A.SELL_ADDRESS,
+	        A.SELL_CATEGORY_NM,
+	        A.SELL_TYPE,
+	        A.SELL_PHONE,
+	        A.SELL_STATUS,
+	        A.SELL_REQ_DATE,
+	        A.SELL_REGI_DATE,
+	        A.ID
+	      , A.SELLER_NO
+	    FROM (
+	        SELECT
+	            ROWNUM RNUM,
+	            B.SELL_NO,
+	            B.USER_NO,
+	            B.SELL_NM,
+	            B.SELL_ADDRESS,
+	            B.SELL_CATEGORY_NM,
+	            B.SELL_TYPE,
+	            B.SELL_PHONE,
+	            B.SELL_STATUS,
+	            B.SELL_REQ_DATE,
+	        	B.SELL_REGI_DATE,
+	            B.SELLER_NO,
+	            B.ID
+	        FROM (
+	            SELECT
+	                C.SELL_NO,
+	                C.USER_NO,
+	                C.SELL_NM,
+	                C.SELL_ADDRESS,
+	                C.SELL_CATEGORY_NM,
+	                C.SELL_TYPE,
+	                C.SELL_PHONE,
+	                C.SELL_STATUS,
+	                C.SELL_REQ_DATE,
+	        		C.SELL_REGI_DATE,
+	        		C.SELLER_NO,
+	                D.ID
+	            FROM TB_SELL C
+	            JOIN TB_USER D ON (C.USER_NO = D.USER_NO)
+	            <where>
+	                <if test="searchCondition == 'req'">
+	                    C.SELL_STATUS = '대기'
+	                </if>
+	                <if test="searchCondition == 'regist'">
+	                    C.SELL_STATUS = '승인'
+	                </if>
+	                <if test="searchCondition == 'reject'">
+	                    C.SELL_STATUS = '거절'
+	                </if>
+	                AND (
+	                    C.SELL_CATEGORY_NM LIKE '%' || #{ searchValue } || '%' OR
+	                    C.SELLER_NO LIKE '%' || #{ searchValue } || '%' OR
+	                    C.USER_NO LIKE '%' || #{ searchValue } || '%' OR
+	                    C.SELL_NM LIKE '%' || #{ searchValue } || '%' OR
+	                    C.SELL_ADDRESS LIKE '%' || #{ searchValue } || '%' OR
+	                    C.SELL_TYPE LIKE '%' || #{ searchValue } || '%' OR
+	                    C.SELL_PHONE LIKE '%' || #{ searchValue } || '%' OR
+	                    D.ID LIKE '%' || #{ searchValue } || '%'
+	                )
+	            </where>
+	            ORDER BY C.SELL_NO DESC
+	        ) B
+	        <![CDATA[
+	            WHERE ROWNUM <= #{ endRow }
+	        ]]>
+	    ) A
+	    WHERE A.RNUM >= #{ startRow }
+	    ORDER BY 1 DESC
+	</select>
+
+	<select id="selectSellDetail" resultMap="sellDtoResultMap">
+	    SELECT
+	          A.SELL_NO
+	        , A.USER_NO
+	        , A.SELL_NM
+	        , A.SELL_ADDRESS
+	        , A.SELL_CATEGORY_NM
+	        , A.SELL_TYPE
+	        , A.SELL_PHONE
+	        , A.SELL_STATUS
+	        , A.SELL_REQ_DATE
+	        , A.SELL_REGI_DATE
+	        , A.SELLER_NO
+	        , B.ID
+	   FROM TB_SELL A
+       LEFT JOIN TB_USER B ON (A.USER_NO = B.USER_NO)
+       WHERE A.SELL_NO = #{ sellNo }
+	</select>
+	
+	<select id="selectList" resultMap="listResultMap">
+		
+		    SELECT * FROM (
+		    SELECT *
+		    FROM (
+		        SELECT
+		            A.LIST_NO,
+		            A.REF_CATEGORY_CODE,
+		            A.LIST_NM,
+		            A.REGIST_DATE,
+		            A.SELL_NO,
+		            C.PRICE,
+		            C.CATEGORY_CODE,
+		            D.FILE_PATH,
+		            D.SAVED_FILE_NM,
+		            D.MAIN_FILE_PATH,
+		            ROWNUM RNUM
+		        FROM (
+		            SELECT DISTINCT
+		                B.PT_NO,
+		                B.PRICE,
+		                B.SELL_NO,
+		                B.LIST_NO,
+		                B.CATEGORY_CODE,
+		                ROW_NUMBER() OVER (PARTITION BY B.LIST_NO ORDER BY B.PRICE ASC) AS PriceRank
+		            FROM TB_PT B
+		            JOIN TB_FILE E ON (B.PT_NO = E.PT_NO)
+		            WHERE E.MAIN_FILE_PATH IS NOT NULL
+		        ) C
+		        JOIN TB_LIST A ON (A.SELL_NO = C.SELL_NO)
+		        JOIN TB_FILE D ON (C.PT_NO = D.PT_NO)
+		        <if test="searchCondition != 'category'">
+			        JOIN TB_REF_CATEGORY E ON(A.REF_CATEGORY_CODE = E.REF_CATEGORY)		        
+		        </if>
+		        <if test="searchCondition == 'category'">
+			        JOIN TB_CATEGORY E ON(C.CATEGORY_CODE = E.CATEGORY_CODE)		        
+		        </if>
+		        WHERE A.LIST_NO = C.LIST_NO
+		          AND A.SELL_NO = C.SELL_NO
+		          <if test="searchCondition != 'category'">
+			          <if test="searchCondition != 'null' and searchValue != 'null'">
+			          	AND (E.REF_CATEGORY_NM LIKE '%' || #{ searchCondition } || '%'
+			          	OR A.LIST_NM LIKE '%' || #{ searchValue } || '%' )
+			          </if>
+			          <if test="searchCondition != 'null' and searchValue == 'null'">
+			          	AND E.REF_CATEGORY_NM LIKE '%' || #{ searchCondition } || '%'
+			          </if>
+			          <if test="searchCondition == 'null' and searchValue != 'null'">
+			          	AND (E.REF_CATEGORY_NM LIKE '%' || #{ searchValue } || '%'
+			          	OR A.LIST_NM LIKE '%' || #{ searchValue } || '%' )
+			          </if>	          
+		          </if>
+		 		  <if test="searchCondition == 'category'">
+		 		  	   AND E.CATEGORY_NAME = #{ searchValue }
+		 		  </if>
+		          AND D.FILE_PATH IS NULL
+		          AND C.PriceRank = 1
+		    ) 
+		    <![CDATA[
+		    	WHERE ROWNUM <= #{ endRow }
+		    ) 
+		    WHERE RNUM >= #{ startRow }
+		    ORDER BY 1 DESC
+		    ]]>
+	</select>
+	
+	<update id="insertSeller">
+		UPDATE TB_SELL
+           SET SELL_STATUS = '승인', SELL_REGI_DATE = SYSDATE
+		 WHERE SELL_NO = #{ sellNo }
+	</update>
+	
+	<update id="rejectSeller">
+		UPDATE TB_SELL
+		  SET SELL_STATUS = '거절', SELL_REGI_DATE = SYSDATE
+		WHERE SELL_NO = #{ sellNo }
+	</update>
+	
+	<insert id="insertAuthSell">
+		INSERT 
+		    INTO TB_USER_ROLE
+		( AUTH_NO
+		, USER_NO)
+		VALUES
+		(  'AU3'
+		,  #{ user.userNo }
+		)
+	</insert>
+</mapper>

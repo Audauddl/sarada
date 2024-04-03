@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/admin/common/CSS/adminHeader.css">
+    <script type="text/javascript" src="/common/JS/header.js"></script> 
+</head>
+<body>
+    
+    <div class="main">
+        <div class="main-logo">
+            <a>로고입니다</a>
+        </div>
+        <ul class="login">
+            <th:block sec:authorize="isAnonymous()">
+                <input type="button" value="로그인" id="login">
+            </th:block>
+            <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                <input type="button" value="관리자 버튼" id="adminButton">
+            </th:block>
+            <th:block sec:authorize="isAuthenticated()">
+                <input type="button" value="마이프로필" id="myProfile">
+                <input type="button" value="로그아웃" id="logout">
+            </th:block>
+        </ul>
+    </div>
+</body>
+</html>
